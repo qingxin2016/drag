@@ -3,7 +3,10 @@
 
 <head>
     <title>Drag</title>
+    <link href="css/jquery-ui.min.css" rel="stylesheet">
     <link href="css/index.css" rel="stylesheet">
+    <script src="js/jquery-3.1.1.min.js"></script>
+    <script src="js/jquery-ui.min.js"></script>
     <script src="js/main.js"></script>
 </head>
 
@@ -54,6 +57,7 @@
                 var img = document.createElement("img");
                 img.classList.add("obj");
                 img.file = file;
+                
                 // 假设 "preview" 是将要展示图片的 div
                 var preview=document.getElementById('drop_zone');
                 preview.appendChild(img);
