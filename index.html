@@ -12,35 +12,60 @@
         <div id="drop_zone" class="section1"></div>
         <output id="list"></output>
     </article>
-    <!--
-        <input type="file" id="files" name="files[]" multiple />
-        <output id="list"></output>
-<div id="drop_zone">Drop files here</div>
-<output id="list"></output>
-
--->
     <script>
-        function handleFileSelect(evt) {
-            evt.stopPropagation();
-            evt.preventDefault();
-            var files = evt.dataTransfer.files; // FileList object.
-            // files is a FileList of File objects. List some properties.
-            var output = [];
-            for (var i = 0, f; f = files[i]; i++) {
-                output.push('<li><strong>', escape(f.name), '</strong> (', f.type || 'n/a', ') - ', f.size, ' bytes, last modified: ', f.lastModifiedDate.toLocaleDateString(), '</li>');
-            }
-            document.getElementById('list').innerHTML = '<ul>' + output.join('') + '</ul>';
+        // Check for the various File API support.
+        if (window.File && window.FileReader && window.FileList && window.Blob) {
+            // Great success! All the File APIs are supported.
+        }
+        else {
+            alert('The File APIs are not fully supported in this browser.');
+        }
+        var dropbox;
+        dropbox = document.getElementById("drop_zone");
+        dropbox.addEventListener("dragenter", dragenter, false);
+        dropbox.addEventListener("dragover", dragover, false);
+        dropbox.addEventListener("drop", drop, false);
+
+        function dragenter(e) {
+            e.stopPropagation();
+            e.preventDefault();
         }
 
-        function handleDragOver(evt) {
-            evt.stopPropagation();
-            evt.preventDefault();
-            evt.dataTransfer.dropEffect = 'copy'; // Explicitly show this is a copy.
+        function dragover(e) {
+            e.stopPropagation();
+            e.preventDefault();
         }
-        // Setup the dnd listeners.
-        var dropZone = document.getElementById('drop_zone');
-        dropZone.addEventListener('dragover', handleDragOver, false);
-        dropZone.addEventListener('drop', handleFileSelect, false);
+
+        function drop(e) {
+            e.stopPropagation();
+            e.preventDefault();
+            var dt = e.dataTransfer;
+            var files = dt.files;
+            handleFiles(files);
+        }
+
+        function handleFiles(files) {
+            for (var i = 0; i < files.length; i++) {
+                var file = files[i];
+                var imageType = /^image\//;
+                if (!imageType.test(file.type)) {
+                    continue;
+                }
+                var img = document.createElement("img");
+                img.classList.add("obj");
+                img.file = file;
+                // 假设 "preview" 是将要展示图片的 div
+                var preview=document.getElementById('drop_zone');
+                preview.appendChild(img);
+                var reader = new FileReader();
+                reader.onload = (function (aImg) {
+                    return function (e) {
+                        aImg.src = e.target.result;
+                    };
+                })(img);
+                reader.readAsDataURL(file);
+            }
+        }
     </script>
 </body>
 
